@@ -1,0 +1,72 @@
+[gd_scene load_steps=2 format=3 uid="uid://dr1j328noxw5w"]
+
+[sub_resource type="GDScript" id="GDScript_ln5yn"]
+script/source = "extends Control
+
+signal start_game
+signal show_screen(screen: String)
+
+func _on_play() -> void:
+	start_game.emit()
+
+func _on_settings() -> void:
+	show_screen.emit(\"Settings\")
+
+func _on_credits() -> void:
+	show_screen.emit(\"Credits\")
+
+func _on_exit() -> void:
+	get_tree().quit()
+"
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_ln5yn")
+
+[node name="Title" type="Label" parent="."]
+custom_minimum_size = Vector2(1920, 0)
+layout_mode = 0
+offset_top = 232.0
+offset_right = 1920.0
+offset_bottom = 407.0
+theme_type_variation = &"title"
+text = "Bomb Bowl"
+horizontal_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 382.0
+offset_top = 612.0
+offset_right = 576.0
+offset_bottom = 948.0
+theme_type_variation = &"main_menu_list"
+
+[node name="Play" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"main_menu_button"
+text = "Play"
+
+[node name="Settings" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"main_menu_button"
+text = "Settings"
+
+[node name="Credits" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"main_menu_button"
+text = "Credits"
+
+[node name="Exit" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"main_menu_button"
+text = "Exit"
+
+[connection signal="pressed" from="VBoxContainer/Play" to="." method="_on_play"]
+[connection signal="pressed" from="VBoxContainer/Settings" to="." method="_on_settings"]
+[connection signal="pressed" from="VBoxContainer/Credits" to="." method="_on_credits"]
+[connection signal="pressed" from="VBoxContainer/Exit" to="." method="_on_exit"]

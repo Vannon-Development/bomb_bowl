@@ -1,0 +1,9 @@
+[gd_resource type="Theme" format=3 uid="uid://ctu6h6qt4qk8g"]
+
+[resource]
+main_menu_button/base_type = &"Button"
+main_menu_button/font_sizes/font_size = 48
+main_menu_list/base_type = &"VBoxContainer"
+main_menu_list/constants/separation = 12
+title/base_type = &"Label"
+title/font_sizes/font_size = 128

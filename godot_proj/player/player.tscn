@@ -1,0 +1,56 @@
+[gd_scene load_steps=3 format=3 uid="uid://buteg5y6kvfo5"]
+
+[sub_resource type="GDScript" id="GDScript_p4tdk"]
+script/source = "extends CharacterBody3D
+
+@export var _walk_speed: float
+@export var _turn_speed: float
+@export var _mouse_sensitivity: float
+
+var _motion: Vector2
+var _turn: Vector2
+var _mouse_mode: bool = true
+
+func _ready() -> void:
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+func _process(delta: float) -> void:
+	_motion = Input.get_vector(\"left\", \"right\", \"forward\", \"backward\")
+	if not _mouse_mode:
+		_turn = Input.get_vector(\"turn_right\", \"turn_left\", \"turn_down\", \"turn_up\")
+
+func _physics_process(delta: float) -> void:
+	var rot := basis.get_euler()
+	rot.y += _turn.x * _turn_speed * delta
+	rot.x += _turn.y * _turn_speed * delta
+	basis = Basis.from_euler(rot)
+	_turn = Vector2.ZERO
+	var dir := basis * Vector3(_motion.x, 0, _motion.y)
+	dir.y = 0
+	velocity = dir * _walk_speed
+	move_and_slide()
+
+func _input(event: InputEvent) -> void:
+	if _mouse_mode and event is InputEventMouseMotion:
+		var evt := event as InputEventMouseMotion
+		_turn += evt.relative * _mouse_sensitivity * -1
+"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_0i44v"]
+radius = 0.4
+height = 1.0
+
+[node name="Player" type="CharacterBody3D"]
+collision_layer = 2
+script = SubResource("GDScript_p4tdk")
+_walk_speed = 6.0
+_turn_speed = 3.0
+_mouse_sensitivity = 0.02
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_0i44v")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+current = true

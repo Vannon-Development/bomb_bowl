@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://cxa74g6miqiii"]
+
+[ext_resource type="PackedScene" uid="uid://dr1j328noxw5w" path="res://menus/main_menu.tscn" id="1_70li1"]
+
+[sub_resource type="GDScript" id="GDScript_jlms0"]
+script/source = "extends Control
+
+func _on_play_game():
+	get_tree().change_scene_to_file(\"res://game/game_scene.tscn\")
+
+func _on_change_screen(screen: String):
+	pass
+"
+
+[node name="MenuControl" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_jlms0")
+
+[node name="MainMenu" parent="." instance=ExtResource("1_70li1")]
+layout_mode = 1
+
+[connection signal="show_screen" from="MainMenu" to="." method="_on_change_screen"]
+[connection signal="start_game" from="MainMenu" to="." method="_on_play_game"]
