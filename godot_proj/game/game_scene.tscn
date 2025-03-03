@@ -1,10 +1,18 @@
-[gd_scene load_steps=3 format=3 uid="uid://cwp13jnb0fcbt"]
+[gd_scene load_steps=4 format=3 uid="uid://cwp13jnb0fcbt"]
 
 [ext_resource type="PackedScene" uid="uid://c2gx1palmwhpp" path="res://level/level.tscn" id="1_tdlbs"]
 [ext_resource type="PackedScene" uid="uid://buteg5y6kvfo5" path="res://player/player.tscn" id="2_0jelx"]
+[ext_resource type="PackedScene" uid="uid://di1r1dgwxb3ya" path="res://menus/pause_menu.tscn" id="3_krfgx"]
 
 [node name="GameScene" type="Node3D"]
 
 [node name="Level" parent="." instance=ExtResource("1_tdlbs")]
 
 [node name="Player" parent="." instance=ExtResource("2_0jelx")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("3_krfgx")]
+visible = false
+offset_left = 709.5
+offset_top = 385.5
+offset_right = 1210.5
+offset_bottom = 694.5

@@ -3,11 +3,10 @@
 [sub_resource type="GDScript" id="GDScript_ln5yn"]
 script/source = "extends Control
 
-signal start_game
 signal show_screen(screen: String)
 
 func _on_play() -> void:
-	start_game.emit()
+	get_tree().change_scene_to_file(\"res://game/game_scene.tscn\")
 
 func _on_settings() -> void:
 	show_screen.emit(\"Settings\")

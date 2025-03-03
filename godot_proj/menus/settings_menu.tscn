@@ -1,0 +1,146 @@
+[gd_scene load_steps=4 format=3 uid="uid://bnoqhcng6skgu"]
+
+[ext_resource type="ButtonGroup" uid="uid://bu2567g0xdyxe" path="res://menus/control_button_group.tres" id="1_wmyge"]
+
+[sub_resource type="GDScript" id="GDScript_gcauq"]
+script/source = "extends Control
+
+signal show_screen(screen: String)
+
+@onready var _gamepad_button: Button = %Gamepad
+@onready var _mouse_button: Button = %Mouse
+@onready var _sensitivity_slider: Slider = %Sensitivity
+@onready var _fullscreen_button: Button = %Fullscreen
+
+func _ready() -> void:
+	_load_values()
+
+func _load_values():
+	var settings = Settings.get_settings()
+	_gamepad_button.set_pressed_no_signal(settings.control_type == Settings.ControlType.GAMEPAD)
+	_mouse_button.set_pressed_no_signal(settings.control_type == Settings.ControlType.MOUSE)
+	_sensitivity_slider.value = settings.mouse_sensitivity
+	_fullscreen_button.button_pressed = settings.fullscreen
+
+func _save_values():
+	var settings = Settings.get_settings()
+	settings.control_type = Settings.ControlType.GAMEPAD if _gamepad_button.button_pressed else Settings.ControlType.MOUSE
+	settings.mouse_sensitivity = _sensitivity_slider.value
+	settings.fullscreen = _fullscreen_button.button_pressed
+	Settings.save_settings()
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed(\"pause\"): _to_home()
+
+func _to_home():
+	show_screen.emit(\"Main\")
+
+func _on_apply() -> void:
+	_save_values()
+	show_screen.emit(\"Main\")
+"
+
+[sub_resource type="GDScript" id="GDScript_rhqxa"]
+script/source = "extends Button
+
+func _toggled(toggled_on: bool) -> void:
+	text = \"On\" if toggled_on else \"Off\"
+"
+
+[node name="SettingsMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_gcauq")
+
+[node name="Label" type="Label" parent="."]
+custom_minimum_size = Vector2(1920, 0)
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 118.0
+theme_type_variation = &"sub_head"
+text = "Settings"
+horizontal_alignment = 1
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 0
+offset_left = 559.0
+offset_top = 372.0
+offset_right = 629.0
+offset_bottom = 412.0
+theme_override_constants/h_separation = 80
+theme_override_constants/v_separation = 20
+columns = 2
+
+[node name="Label" type="Label" parent="GridContainer"]
+layout_mode = 2
+text = "Control"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GridContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Gamepad" type="Button" parent="GridContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("1_wmyge")
+text = "Gamepad"
+
+[node name="Mouse" type="Button" parent="GridContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("1_wmyge")
+text = "Mouse"
+
+[node name="Label2" type="Label" parent="GridContainer"]
+layout_mode = 2
+text = "Mouse Sensitivity"
+
+[node name="Sensitivity" type="HSlider" parent="GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.5
+max_value = 2.0
+step = 0.05
+value = 1.0
+tick_count = 5
+
+[node name="Label4" type="Label" parent="GridContainer"]
+layout_mode = 2
+text = "Fullscreen"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="GridContainer"]
+layout_mode = 2
+
+[node name="Fullscreen" type="Button" parent="GridContainer/HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+toggle_mode = true
+text = "On"
+script = SubResource("GDScript_rhqxa")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(1920, 0)
+layout_mode = 0
+offset_top = 816.0
+offset_right = 1920.0
+offset_bottom = 869.0
+theme_override_constants/separation = 400
+alignment = 1
+
+[node name="ApplyButton" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "Apply"
+
+[node name="CancelButton" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "Cancel"
+
+[connection signal="pressed" from="HBoxContainer/ApplyButton" to="." method="_on_apply"]
+[connection signal="pressed" from="HBoxContainer/CancelButton" to="." method="_to_home"]
