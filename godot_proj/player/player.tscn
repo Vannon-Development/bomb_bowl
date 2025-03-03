@@ -55,7 +55,8 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_released(\"start_roll\"):
 		var dir := _owner.quaternion * Vector3(0, 0, -1)
 		dir = Vector3(dir.x, 0, dir.z).normalized()
-		var b := Ball.create(Vector2(dir.x, dir.z), 8.0, 0)
+		var spin := randf_range(-1, 1)
+		var b := Ball.create(Vector2(dir.x, dir.z), 8.0, spin)
 		b.position = _owner.position
 		_owner.add_sibling(b)
 "

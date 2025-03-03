@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://cdc546syoeaxw"]
+[gd_scene load_steps=7 format=3 uid="uid://cdc546syoeaxw"]
 
 [ext_resource type="Script" uid="uid://b5th6bl172urr" path="res://player/ball.gd" id="1_i38dn"]
 
@@ -13,6 +13,43 @@ height = 0.4
 [sub_resource type="SphereShape3D" id="SphereShape3D_ov2qx"]
 radius = 0.2
 
+[sub_resource type="GDScript" id="GDScript_nwasv"]
+script/source = "extends State #Loading
+
+func _goto_state() -> String:
+	if owner.is_node_ready(): return \"Rolling\"
+	return \"\"
+"
+
+[sub_resource type="GDScript" id="GDScript_w0m6g"]
+script/source = "extends State
+
+@export var _spin_effect: float = 1.0
+
+var _owner: CharacterBody3D
+
+func _begin_state() -> void:
+	_owner = owner
+
+func _physics_process(delta: float) -> void:
+	if not is_active: return
+	_direction = _direction.rotated(delta * PI * _spin_effect * _spin)
+	_owner.velocity = Vector3(_direction.x, 0, _direction.y) * _speed
+	_owner.move_and_slide()
+
+var _direction: Vector2:
+	get: return get_context()[\"direction\"]
+	set(val): get_context()[\"direction\"] = val
+
+var _speed: float:
+	get: return get_context()[\"speed\"]
+	set(val): get_context()[\"speed\"] = val
+
+var _spin: float:
+	get: return get_context()[\"spin\"]
+	set(val): get_context()[\"spin\"] = val
+"
+
 [node name="Ball" type="CharacterBody3D"]
 collision_layer = 4
 script = ExtResource("1_i38dn")
@@ -24,3 +61,14 @@ mesh = SubResource("SphereMesh_nxltf")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
 shape = SubResource("SphereShape3D_ov2qx")
+
+[node name="SM" type="StateMachine" parent="."]
+default = "Loading"
+unique_name_in_owner = true
+
+[node name="Loading" type="State" parent="SM"]
+script = SubResource("GDScript_nwasv")
+
+[node name="Rolling" type="State" parent="SM"]
+script = SubResource("GDScript_w0m6g")
+_spin_effect = 0.2

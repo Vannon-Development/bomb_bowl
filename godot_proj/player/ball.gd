@@ -1,12 +1,15 @@
 class_name Ball extends CharacterBody3D
 
+@onready var _sm: StateMachine = %SM
+
 var _direction: Vector2
 var _speed: float
 var _spin: float
 
-func _physics_process(_delta: float) -> void:
-	velocity = Vector3(_direction.x, 0, _direction.y) * _speed
-	move_and_slide()
+func _ready() -> void:
+	_sm.context["direction"] = _direction
+	_sm.context["speed"] = _speed
+	_sm.context["spin"] = _spin
 
 const spawn_file: PackedScene = preload("res://player/ball.tscn")
 
