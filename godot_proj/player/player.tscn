@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://buteg5y6kvfo5"]
+[gd_scene load_steps=4 format=3 uid="uid://buteg5y6kvfo5"]
 
 [sub_resource type="GDScript" id="GDScript_p4tdk"]
 script/source = "extends CharacterBody3D
@@ -10,8 +10,11 @@ script/source = "extends CharacterBody3D
 var _motion: Vector2
 var _turn: Vector2
 var _mouse_mode: bool = true
+var _set_sensitivity: float = 1.0
 
 func _ready() -> void:
+	_mouse_mode = Settings.get_settings().control_type == Settings.ControlType.MOUSE
+	_set_sensitivity = Settings.get_settings().mouse_sensitivity
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _process(_delta: float) -> void:
@@ -33,12 +36,29 @@ func _physics_process(delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if _mouse_mode and event is InputEventMouseMotion:
 		var evt := event as InputEventMouseMotion
-		_turn += evt.relative * _mouse_sensitivity * -1
+		_turn += evt.relative * _set_sensitivity * _mouse_sensitivity * -1
 "
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_0i44v"]
 radius = 0.4
 height = 1.0
+
+[sub_resource type="GDScript" id="GDScript_8r4ak"]
+script/source = "extends Node
+
+var _owner: CharacterBody3D
+
+func _ready() -> void:
+	_owner = owner
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_released(\"start_roll\"):
+		var dir := _owner.quaternion * Vector3(0, 0, -1)
+		dir = Vector3(dir.x, 0, dir.z).normalized()
+		var b := Ball.create(Vector2(dir.x, dir.z), 8.0, 0)
+		b.position = _owner.position
+		_owner.add_sibling(b)
+"
 
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
@@ -54,3 +74,6 @@ shape = SubResource("CapsuleShape3D_0i44v")
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 current = true
+
+[node name="BallControl" type="Node" parent="."]
+script = SubResource("GDScript_8r4ak")

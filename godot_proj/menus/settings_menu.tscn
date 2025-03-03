@@ -28,6 +28,7 @@ func _save_values():
 	settings.mouse_sensitivity = _sensitivity_slider.value
 	settings.fullscreen = _fullscreen_button.button_pressed
 	Settings.save_settings()
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN if settings.fullscreen else DisplayServer.WINDOW_MODE_WINDOWED)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed(\"pause\"): _to_home()
@@ -43,8 +44,14 @@ func _on_apply() -> void:
 [sub_resource type="GDScript" id="GDScript_rhqxa"]
 script/source = "extends Button
 
-func _toggled(toggled_on: bool) -> void:
-	text = \"On\" if toggled_on else \"Off\"
+func _ready() -> void:
+	_set_text()
+
+func _toggled(_toggled_on: bool) -> void:
+	_set_text()
+
+func _set_text():
+	text = \"On\" if button_pressed else \"Off\"
 "
 
 [node name="SettingsMenu" type="Control"]
@@ -122,7 +129,6 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 toggle_mode = true
-text = "On"
 script = SubResource("GDScript_rhqxa")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]

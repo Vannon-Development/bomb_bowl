@@ -7,6 +7,7 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed(\"pause\"):
 		get_tree().paused = not get_tree().paused
 		visible = get_tree().paused
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if get_tree().paused else Input.MOUSE_MODE_CAPTURED
 "
 
 [node name="PauseMenu" type="PanelContainer"]

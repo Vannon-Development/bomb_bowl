@@ -5,6 +5,10 @@
 [sub_resource type="GDScript" id="GDScript_jlms0"]
 script/source = "extends Control
 
+func _enter_tree() -> void:
+	var settings := Settings.get_settings()
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN if settings.fullscreen else DisplayServer.WINDOW_MODE_WINDOWED)
+
 func _on_change_screen(screen: String):
 	remove_child(get_child(0))
 	var obj: Control = null
