@@ -11,10 +11,10 @@ func _ready() -> void:
 	_sm.context["speed"] = _speed
 	_sm.context["spin"] = _spin
 
-const spawn_file: PackedScene = preload("res://player/ball.tscn")
+const spawn_file = "res://player/ball.tscn"
 
 static func create(direction: Vector2, speed: float, spin: float) -> Ball:
-	var b := spawn_file.instantiate() as Ball
+	var b := load(spawn_file).instantiate() as Ball
 	b._direction = direction
 	b._speed = speed
 	b._spin = spin

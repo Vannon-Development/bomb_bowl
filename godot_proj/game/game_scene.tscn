@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://cwp13jnb0fcbt"]
+[gd_scene load_steps=6 format=3 uid="uid://cwp13jnb0fcbt"]
 
 [ext_resource type="PackedScene" uid="uid://c2gx1palmwhpp" path="res://level/level.tscn" id="1_tdlbs"]
 [ext_resource type="PackedScene" uid="uid://buteg5y6kvfo5" path="res://player/player.tscn" id="2_0jelx"]
 [ext_resource type="PackedScene" uid="uid://di1r1dgwxb3ya" path="res://menus/pause_menu.tscn" id="3_krfgx"]
+[ext_resource type="PackedScene" uid="uid://dkqm05p67ex1" path="res://enemies/big_pin.tscn" id="4_svcr2"]
+[ext_resource type="PackedScene" uid="uid://n4e7xawlsek" path="res://enemies/small_pin.tscn" id="5_tkpq3"]
 
 [node name="GameScene" type="Node3D"]
 
@@ -16,3 +18,9 @@ offset_left = 709.5
 offset_top = 385.5
 offset_right = 1210.5
 offset_bottom = 694.5
+
+[node name="BigPin" parent="." instance=ExtResource("4_svcr2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 11.6736)
+
+[node name="SmallPin" parent="." instance=ExtResource("5_tkpq3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1825, 0, 0)
