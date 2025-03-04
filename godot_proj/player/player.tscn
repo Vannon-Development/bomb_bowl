@@ -57,7 +57,7 @@ func _input(event: InputEvent) -> void:
 		dir = Vector3(dir.x, 0, dir.z).normalized()
 		var spin := randf_range(-1, 1)
 		var b := Ball.create(Vector2(dir.x, dir.z), 8.0, spin)
-		b.position = Vector3(_owner.position.x, 0, _owner.position.z)
+		b.position = Vector3(_owner.position.x, 0.2, _owner.position.z)
 		_owner.add_sibling(b)
 "
 

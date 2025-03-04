@@ -10,6 +10,7 @@ func _ready() -> void:
 	_sm.context["direction"] = _direction
 	_sm.context["speed"] = _speed
 	_sm.context["spin"] = _spin
+	_sm.context["root"] = self
 
 const spawn_file = "res://player/ball.tscn"
 

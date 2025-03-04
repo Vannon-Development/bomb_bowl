@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://cdc546syoeaxw"]
+[gd_scene load_steps=9 format=3 uid="uid://cdc546syoeaxw"]
 
 [ext_resource type="Script" uid="uid://b5th6bl172urr" path="res://player/ball.gd" id="1_i38dn"]
 [ext_resource type="PackedScene" uid="uid://c7vt637alxars" path="res://player/bowling_ball.glb" id="2_w0m6g"]
@@ -6,45 +6,103 @@
 [sub_resource type="SphereShape3D" id="SphereShape3D_ov2qx"]
 radius = 0.2
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_w0m6g"]
+radius = 0.259336
+
 [sub_resource type="GDScript" id="GDScript_nwasv"]
 script/source = "extends State #Loading
 
 func _goto_state() -> String:
-	if owner.is_node_ready(): return \"Rolling\"
+	if owner.is_node_ready(): return \"Moving\"
 	return \"\"
+"
+
+[sub_resource type="GDScript" id="GDScript_ymhie"]
+script/source = "extends State #AutoExplode
+
+var _detect: bool
+
+func _begin_state() -> void:
+	_detect = false
+
+func _goto_state() -> String:
+	if _detect: return \"Explode\"
+	return \"\"
+
+func _on_detect(_area: Area3D) -> void:
+	if not is_active: return
+	_detect = true
+"
+
+[sub_resource type="GDScript" id="GDScript_jfq2e"]
+script/source = "extends State #BaseMotion
+
+@export var _ground_detect: RayCast3D
+@export var _spin_modifier: float = 0.2
+
+var _root: CharacterBody3D
+var _explode_trigger: bool
+
+func _begin_state() -> void:
+	_root = get_context()[\"root\"]
+	_explode_trigger = false
+
+func _goto_state() -> String:
+	if _explode_trigger: return \"Explode\"
+	return \"\"
+
+func _end_state() -> void:
+	_root.velocity = Vector3.ZERO
+
+func _physics_process(delta: float) -> void:
+	if not is_active: return
+	var direction: Vector2 = get_context()[\"direction\"]
+	var speed: float = get_context()[\"speed\"]
+	var spin: float = get_context()[\"spin\"]
+	var down: float = get_context().get(\"down\", 0.0)
+	var grounded := _is_grounded()
+
+	if grounded:
+		direction = direction.rotated(delta * PI * _spin_modifier * spin)
+		get_context()[\"direction\"] = direction
+		get_context()[\"spin\"] = move_toward(spin, 0.0, delta * 0.2)
+	down = -9.81 * delta + (0.0 if grounded else down)
+	get_context()[\"down\"] = down
+	_root.velocity = Vector3(direction.x, 0, direction.y) * speed + Vector3(0, down, 0)
+	_root.move_and_slide()
+
+	var motion := _root.get_position_delta()
+	var lat_motion := Vector2(motion.x, motion.z)
+	var tar_motion := direction * speed * delta
+	if lat_motion.length() < 0.5 * tar_motion.length():
+		_explode_trigger = true
+		return
+	if lat_motion.normalized().dot(tar_motion.normalized()) < 0.8:
+		_explode_trigger = true
+		return
+	get_context()[\"direction\"] = lat_motion.normalized()
+
+func _is_grounded() -> bool:
+	_ground_detect.force_raycast_update()
+	return _ground_detect.is_colliding()
 "
 
 [sub_resource type="GDScript" id="GDScript_w0m6g"]
 script/source = "extends State
 
-@export var _spin_effect: float = 1.0
-
-var _owner: CharacterBody3D
+var _root: CharacterBody3D
 
 func _begin_state() -> void:
-	_owner = owner
-
-func _physics_process(delta: float) -> void:
-	if not is_active: return
-	_direction = _direction.rotated(delta * PI * _spin_effect * _spin)
-	_owner.velocity = Vector3(_direction.x, 0, _direction.y) * _speed
-	_owner.move_and_slide()
-
-var _direction: Vector2:
-	get: return get_context()[\"direction\"]
-	set(val): get_context()[\"direction\"] = val
-
-var _speed: float:
-	get: return get_context()[\"speed\"]
-	set(val): get_context()[\"speed\"] = val
-
-var _spin: float:
-	get: return get_context()[\"spin\"]
-	set(val): get_context()[\"spin\"] = val
+	_root = get_context()[\"root\"]
+	var ex := Explosion.create()
+	ex.position = _root.position
+	_root.add_sibling(ex)
+	_root.queue_free()
 "
 
 [node name="Ball" type="CharacterBody3D"]
 collision_layer = 4
+floor_stop_on_slope = false
 script = ExtResource("1_i38dn")
 
 [node name="bowling_ball" parent="." instance=ExtResource("2_w0m6g")]
@@ -54,6 +112,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.199519, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
 shape = SubResource("SphereShape3D_ov2qx")
 
+[node name="GroundDetect" type="RayCast3D" parent="."]
+enabled = false
+target_position = Vector3(0, -0.002, 0)
+
+[node name="AutoExplodeDetect" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 16
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AutoExplodeDetect"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("SphereShape3D_w0m6g")
+
 [node name="SM" type="StateMachine" parent="."]
 default = "Loading"
 unique_name_in_owner = true
@@ -62,6 +133,14 @@ unique_name_in_owner = true
 is_active = true
 script = SubResource("GDScript_nwasv")
 
-[node name="Rolling" type="State" parent="SM"]
+[node name="AutoExplode" type="State" parent="SM"]
+script = SubResource("GDScript_ymhie")
+
+[node name="Moving" type="State" parent="SM/AutoExplode" node_paths=PackedStringArray("_ground_detect")]
+script = SubResource("GDScript_jfq2e")
+_ground_detect = NodePath("../../../GroundDetect")
+
+[node name="Explode" type="State" parent="SM"]
 script = SubResource("GDScript_w0m6g")
-_spin_effect = 0.2
+
+[connection signal="area_entered" from="AutoExplodeDetect" to="SM/AutoExplode" method="_on_detect"]

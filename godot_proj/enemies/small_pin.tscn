@@ -1,9 +1,14 @@
-[gd_scene load_steps=3 format=3 uid="uid://n4e7xawlsek"]
+[gd_scene load_steps=5 format=3 uid="uid://n4e7xawlsek"]
 
 [ext_resource type="PackedScene" uid="uid://c3a2hg865rj8e" path="res://enemies/bowling_pin_small.glb" id="1_vnbjy"]
+[ext_resource type="Script" uid="uid://cfksksruk056f" path="res://game/auto_explode.gd" id="2_wvb06"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_vnbjy"]
 points = PackedVector3Array(0.093116, 0.180216, 0.0147675, -0.0957367, 0.110697, -0.00682827, -0.0956797, 0.11078, 0.00792887, -0.0222597, 0.49499, -0.0146461, 0.0225789, 0.119157, -0.0949885, 0.0153627, 0.0882896, 0.0895553, -0.0153828, 0.442943, 0.0643814, 0.0484367, 0.450843, -0.0473129, 0.0526031, 0.0134573, -0.0291678, -0.0552954, 0.450843, -0.0393304, 0.0484367, 0.442943, 0.0484367, -0.0574998, 0.120802, -0.0792799, -0.0591567, 0.0124965, 0.0079911, -0.0575128, 0.12805, 0.0804215, -0.0632779, 0.450843, 0.0164863, 0.0804215, 0.12805, -0.0575128, 0.0727959, 0.121395, 0.0655872, -0.0293357, 0.0121138, -0.0517732, 0.0164863, 0.450843, -0.0632779, 0.0301841, 0.0141673, 0.0524479, 0.0218666, 0.173204, 0.093021, 0.0643814, 0.442943, -0.0153828, 0.0895567, 0.088287, 0.0153629, -0.0276447, 0.173836, -0.0911499, -0.029168, 0.0134558, 0.0526035, -0.0943878, 0.127309, -0.0286405, 0.015696, 0.494115, 0.0232823, -0.0870111, 0.120095, 0.0443391, -0.0473129, 0.450843, 0.0484367, -0.0215672, 0.125995, 0.0965174, -0.0393304, 0.450843, -0.0552954, 0.0965174, 0.125995, -0.0215672)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_2g0fx"]
+height = 0.5
+radius = 0.130371
 
 [node name="SmallPin" instance=ExtResource("1_vnbjy")]
 collision_layer = 8
@@ -11,3 +16,11 @@ collision_mask = 7
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." index="1"]
 shape = SubResource("ConvexPolygonShape3D_vnbjy")
+
+[node name="AutoExplode" type="Area3D" parent="." index="2"]
+script = ExtResource("2_wvb06")
+metadata/_custom_type_script = "uid://cfksksruk056f"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AutoExplode" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+shape = SubResource("CylinderShape3D_2g0fx")

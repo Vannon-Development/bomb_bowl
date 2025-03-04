@@ -1,3 +1,24 @@
-[gd_scene format=3 uid="uid://c1y35rg26revv"]
+[gd_scene load_steps=4 format=3 uid="uid://c1y35rg26revv"]
+
+[ext_resource type="Script" uid="uid://br7h2wqrr8bcs" path="res://player/explosion.gd" id="1_a2wif"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r0ovm"]
+transparency = 1
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_r0ovm"]
+material = SubResource("StandardMaterial3D_r0ovm")
 
 [node name="Explosion" type="Node3D"]
+script = ExtResource("1_a2wif")
+_exp_time = 0.3
+
+[node name="Model" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+mesh = SubResource("SphereMesh_r0ovm")
+
+[node name="Light" type="OmniLight3D" parent="."]
+unique_name_in_owner = true
+light_color = Color(1, 0.579119, 0.203886, 1)
+light_energy = 0.01
+omni_range = 0.1
