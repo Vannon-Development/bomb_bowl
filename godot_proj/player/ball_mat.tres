@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://brn18046b7i0v"]
+
+[ext_resource type="Texture2D" uid="uid://ctr3ovkkvdtm5" path="res://player/bolwing_ball_diffuse_1024.png" id="1_ndxri"]
+
+[resource]
+albedo_texture = ExtResource("1_ndxri")
