@@ -39,6 +39,7 @@ script/source = "extends State #BaseMotion
 
 @export var _ground_detect: RayCast3D
 @export var _spin_modifier: float = 0.2
+@export var _ball_obj: Node3D
 
 var _root: CharacterBody3D
 var _explode_trigger: bool
@@ -66,6 +67,9 @@ func _physics_process(delta: float) -> void:
 		direction = direction.rotated(delta * PI * _spin_modifier * spin)
 		get_context()[\"direction\"] = direction
 		get_context()[\"spin\"] = move_toward(spin, 0.0, delta * 0.2)
+		var spin_dir := direction.rotated(PI / 2.0)
+		_ball_obj.rotate_object_local(Vector3(spin_dir.x, 0, spin_dir.y), remap(speed, 0, 5.0, 0, -PI * delta))
+	_ball_obj.rotate_object_local(Vector3(direction.x, 0, direction.y),  remap(spin, -1, 1, -4 * PI * delta, 4 * PI * delta))
 	down = -9.81 * delta + (0.0 if grounded else down)
 	get_context()[\"down\"] = down
 	_root.velocity = Vector3(direction.x, 0, direction.y) * speed + Vector3(0, down, 0)
@@ -136,9 +140,10 @@ script = SubResource("GDScript_nwasv")
 [node name="AutoExplode" type="State" parent="SM"]
 script = SubResource("GDScript_ymhie")
 
-[node name="Moving" type="State" parent="SM/AutoExplode" node_paths=PackedStringArray("_ground_detect")]
+[node name="Moving" type="State" parent="SM/AutoExplode" node_paths=PackedStringArray("_ground_detect", "_ball_obj")]
 script = SubResource("GDScript_jfq2e")
 _ground_detect = NodePath("../../../GroundDetect")
+_ball_obj = NodePath("../../../bowling_ball")
 
 [node name="Explode" type="State" parent="SM"]
 script = SubResource("GDScript_w0m6g")
